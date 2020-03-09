@@ -5,6 +5,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.sample.nss.echo.EchoServer;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+
 @SpringBootApplication
 public class NettyServerSampleApplication {
 
@@ -17,6 +20,7 @@ public class NettyServerSampleApplication {
 		// 02 : echo server
 		EchoServer es = new EchoServer(8020);
 		es.run();
+		
 	}
 
 }
