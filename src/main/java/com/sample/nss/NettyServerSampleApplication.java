@@ -4,6 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.sample.nss.echo.EchoServer;
+import com.sample.nss.http.HttpStaticServer;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -18,9 +19,12 @@ public class NettyServerSampleApplication {
 		// ds.run();
 	
 		// 02 : echo server
-		EchoServer es = new EchoServer(8020);
-		es.run();
+		// EchoServer es = new EchoServer(8020);
+		// es.run();
 		
+		// 03: http server
+		HttpStaticServer hss = new HttpStaticServer(8030);
+		hss.run();
 	}
 
 }

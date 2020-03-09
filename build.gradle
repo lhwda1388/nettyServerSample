@@ -23,7 +23,11 @@ dependencies {
 		exclude module: "spring-boot-starter-tomcat"
 	}
 	implementation 'io.netty:netty-all:4.1.46.Final'
+	
+	
 	compileOnly 'org.projectlombok:lombok:1.18.12'
+	
+	testImplementation 'org.springframework.boot:spring-boot-devtools'
 	
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'

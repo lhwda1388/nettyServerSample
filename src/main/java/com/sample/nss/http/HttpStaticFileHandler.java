@@ -31,8 +31,12 @@ public class HttpStaticFileHandler extends SimpleChannelInboundHandler<HttpReque
     }
 	
 	@Override
-	protected void channelRead0(ChannelHandlerContext ctx, HttpRequest msg) throws Exception {
-		// TODO Auto-generated method stub
+	protected void channelRead0(ChannelHandlerContext ctx, HttpRequest req) throws Exception {
+		if (!this.path.equals(req.getUri())) {
+			ctx.fireChannelRead(req);
+		} else {
+			sendStaticFile(ctx, (FullHttpRequest)req);
+		}
 		
 	}
 	
