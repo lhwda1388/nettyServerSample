@@ -4,6 +4,7 @@ import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -16,12 +17,13 @@ import io.netty.util.internal.shaded.org.jctools.queues.MessagePassingQueue.Cons
 public class StartUpUtil {
 	public static void runServer(int port, ChannelHandler childHandler, Consumer<ServerBootstrap> block) throws Exception {
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
+        EventLoopGroup workerGroup = new NioEventLoopGroup(2);
         try {
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class);
             b.handler(new LoggingHandler(LogLevel.INFO));
             b.childHandler(childHandler);
+            b.childOption(ChannelOption.SO_KEEPALIVE, true);
             block.accept(b);
             Channel ch = b.bind(port).sync().channel();
             System.err.println("Ready for 0.0.0.0:" + port);

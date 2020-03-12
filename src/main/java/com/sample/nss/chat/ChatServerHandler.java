@@ -55,17 +55,18 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<ChatMessage>{
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, ChatMessage msg) throws Exception {
     	System.out.println("channelRead0 =====================================");
-        if ("PING".equals(msg.command)) {
+    	String command = msg.command.toUpperCase();
+        if ("PING".equals(command)) {
             // TODO: [실습3-1] PING 명령어에 대한 응답을 내보냅니다
         	ctx.write(M("PONG"));
-        } else if ("QUIT".equals(msg.command)) {
+        } else if ("QUIT".equals(command)) {
             // TODO: [실습3-2] QUIT 명령어를 처리하고 BYE를 응답합니다. 연결도 끊습니다.
         	ctx.writeAndFlush(M("BYE", nickname(ctx)));
         	ctx.close();
-        } else if ("SEND".equals(msg.command)) {
+        } else if ("SEND".equals(command)) {
             // TODO: [실습3-3] 클라이언트로부터 대화 텍스트가 왔습니다. 모든 채널에 FROM 메시지를 방송합니다.
         	channels.writeAndFlush(M("FROM", nickname(ctx), msg.text));
-        } else if ("NICK".equals(msg.command)) {
+        } else if ("NICK".equals(command)) {
             changeNickname(ctx, msg);
         } else {
             ctx.write(M("ERR", null, "unknown command -> " + msg.command));
