@@ -3,6 +3,7 @@ package com.sample.nss;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import com.sample.nss.chat.ChatServer;
 import com.sample.nss.echo.EchoServer;
 import com.sample.nss.http.HttpStaticServer;
 
@@ -23,8 +24,10 @@ public class NettyServerSampleApplication {
 		// es.run();
 		
 		// 03: http server
-		HttpStaticServer hss = new HttpStaticServer(8030);
-		hss.run();
+		// HttpStaticServer hss = new HttpStaticServer(8030);
+		// hss.run();
+		ChatServer cs = new ChatServer(8040);
+		cs.run();
 	}
 
 }
