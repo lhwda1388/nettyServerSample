@@ -1,0 +1,184 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Netty StartUp - WebChat</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <style>
+    body {
+      margin: 10px auto;
+      max-width: 900px;
+    }
+    #messages {
+      width: 100%;
+      height: 300px;
+      padding: 5px;
+      box-sizing: border-box;
+      background-color: #eee;
+      line-height: 1.4;
+      overflow-y: scroll;
+    }
+    #messages cite {
+      display: inline-block;
+      vertical-align: middle;
+      overflow: hidden;
+      width: 80px;
+      height: 20px;
+    }
+    #messages .info {
+      color: #55f;
+    }
+    aside {
+      padding: 5px;
+      box-sizing: border-box;
+      border: 1px solid #eee;
+      height: 300px;
+      overflow-y: scroll;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" class="container-fluid">
+    <header>
+      <h2>
+        웹소켓 채팅
+        <i class="fa fa-chain" v-if="connected"></i>
+        <i class="fa fa-chain-broken" v-else></i>
+      </h2>
+    </header>
+    <main class="row">
+      <section class="col-md-8">
+        <div id="messages">
+          <div v-for="msg in messages" v-bind:class="msg.type">
+            <cite>{{ msg.nick }}</cite>
+            {{ msg.text }}
+          </div>
+          <div style="height: 30px;" buffer-for-scroll></div>
+        </div>
+        <form class="form-inline" onsubmit="return false;">
+          <div class="form-group">
+            <input class="form-control" type="text" placeholder="대화명" v-model="nickname" @blur="change_nick">
+          </div>
+          <div class="form-group">
+            <input class="form-control" style="width: 300px;" type="text" name="text" placeholder="메시지" autofocus v-model="text" @keydown="keydown">
+          </div>
+          <div class="form-group">
+            <button class="btn btn-primary" style="height: 36px;" @click="send">
+              <i class="fa fa-comment"> 보내기</i>
+            </button>
+          </div>
+        </form>
+      </section>
+      <aside class="col-md-4">
+        <div v-for="nick in attendees">
+          {{ nick }}
+          <i v-if="nick == prevnick" class="fa fa-user"></i>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script src="https://unpkg.com/vue@2.3.3/dist/vue.min.js"></script>
+  <script type="text/javascript">
+    var app = new Vue({
+      el: '#app',
+      data: {
+        connected: false,
+        nickname: "",
+        prevnick: null,
+        text: "",
+        history: [],
+        messages: [],
+        attendees: [],
+        ws: null
+      },
+      created: function() {
+        this.history.push = function(text) {
+          Array.prototype.push.call(this, text)
+          this.historyIdx = this.length - 1
+        }
+        this.history.prev = function() {
+          if (this.length == 0) return ""
+          this.historyIdx = (this.historyIdx + this.length) % this.length
+          return this[this.historyIdx--]
+        }
+      },
+      mounted: function() {
+        this.ws = window.ws = new WebSocket("ws://" + window.location.host + "/chat")
+        var $scope = this
+        var message = function(m) {
+          $scope.messages.push(m)
+          var area = document.getElementById("messages")
+          area.scrollTop = area.scrollHeight
+        };
+
+        this.ws.onmessage = function(event) {
+          var line = event.data
+          var m1 = line.split(" ")
+          var m2 = m1.shift().split(":", 2)
+          var command = m2[0]
+          var nickname = m2[1]
+          var text = m1.join(" ")
+          console.log([line, command, nickname, text])
+          var a = $scope.attendees
+          if (command == "FROM") {
+            message({nick: nickname, text: text})
+          } else if (command == "HAVE" || command == "JOIN" || command == "HELO") {
+            a.push(nickname)
+            if (command == "HELO") {
+              message({type: "info", text: "환영합니다, " + nickname + "님!"})
+              $scope.prevnick = $scope.nickname = nickname
+            } else if (command == "JOIN") {
+              message({type: "info", text: nickname + "님이 들어오셨습니다."})
+            }
+          } else if (command == "LEFT") {
+            a.splice(a.indexOf(nickname), 1)
+            message({type: "info", text: nickname + "님이 나가셨습니다."})
+          } else if (command == "NICK") {
+            if (nickname == $scope.prevnick) {
+              message({type: "info", text: "대화명이 바뀌었습니다: " + text})
+              $scope.prevnick = $scope.nickname = text
+            } else {
+              message({type: "info", text: nickname + "님이 대화명을 바꾸셨습니다: " + text})
+            }
+            a.splice(a.indexOf(nickname), 1)
+            a.push(text)
+          }
+        }
+        this.ws.onopen = function() {
+          console.log("ws open"); $scope.connected = true
+          $scope.ws.onclose = function() {
+            console.log("ws close"); $scope.connected = false
+            message({type: "info", text: "연결이 끊겼습니다."})
+          }
+        }
+      },
+      methods: {
+        send: function() {
+          if (this.text && this.text.length > 0) {
+            this.ws.send("SEND " + this.text)
+            this.history.push(this.text)
+            this.text = ""
+          }
+        },
+        keydown: function($event) {
+          if ($event.keyCode == 38) { // 커서 위방향
+            this.text = this.history.prev()
+          } else {
+            return false
+          }
+        },
+        change_nick: function() {
+          if (this.nickname == "") this.nickname = this.prevnick
+          if (this.prevnick != this.nickname) {
+            ws.send("NICK " + this.nickname)
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
