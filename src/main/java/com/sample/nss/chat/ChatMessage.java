@@ -30,10 +30,11 @@ public class ChatMessage {
 		
 		if (!StringUtils.isEmpty(this.nickname)) b.append(":").append(this.nickname);
 		if (!StringUtils.isEmpty(this.text)) b.append(" ").append(this.text);
-		return b.toString();
+		return b.toString().trim();
 	}
 	
 	public static ChatMessage parse(String line) {
+		System.out.println("line.contains(\"\\n\") " + line.contains("\n"));
 		if (line.contains("\n")) throw new IllegalArgumentException();
 		String[] tokens = line.split("\\s", 2);
 		String command = tokens[0];

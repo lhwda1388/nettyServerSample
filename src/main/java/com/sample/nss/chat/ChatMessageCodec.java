@@ -9,11 +9,15 @@ public class ChatMessageCodec extends MessageToMessageCodec<String, ChatMessage>
 	
 	@Override
 	protected void encode(ChannelHandlerContext ctx, ChatMessage msg, List<Object> out) throws Exception {
-		out.add(msg + "\n");
+		System.out.println("encode =============================== " + msg.command);
+		String tempMsg = msg.toString() + "\r\n";
+		System.out.println("|" + tempMsg + "|");
+		out.add(tempMsg);
 	}
 	
 	@Override
 	protected void decode(ChannelHandlerContext ctx, String msg, List<Object> out) throws Exception {
+		System.out.println("decode =============================== " + msg);
 		out.add(ChatMessage.parse(msg));
 	}
 }

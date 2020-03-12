@@ -53,6 +53,26 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<ChatMessage>{
     }
 
     @Override
+    protected void channelRead0(ChannelHandlerContext ctx, ChatMessage msg) throws Exception {
+    	System.out.println("channelRead0 =====================================");
+        if ("PING".equals(msg.command)) {
+            // TODO: [실습3-1] PING 명령어에 대한 응답을 내보냅니다
+        	ctx.write(M("PONG"));
+        } else if ("QUIT".equals(msg.command)) {
+            // TODO: [실습3-2] QUIT 명령어를 처리하고 BYE를 응답합니다. 연결도 끊습니다.
+        	ctx.writeAndFlush(M("BYE", nickname(ctx)));
+        	ctx.close();
+        } else if ("SEND".equals(msg.command)) {
+            // TODO: [실습3-3] 클라이언트로부터 대화 텍스트가 왔습니다. 모든 채널에 FROM 메시지를 방송합니다.
+        	channels.writeAndFlush(M("FROM", nickname(ctx), msg.text));
+        } else if ("NICK".equals(msg.command)) {
+            changeNickname(ctx, msg);
+        } else {
+            ctx.write(M("ERR", null, "unknown command -> " + msg.command));
+        }
+    }
+    
+    @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
         ctx.flush();
     }
@@ -63,24 +83,6 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<ChatMessage>{
         if (!ctx.channel().isActive()) {
             ctx.writeAndFlush(M("ERR", null, t.getMessage()))
                     .addListener(ChannelFutureListener.CLOSE);
-        }
-    }
-
-    @Override
-    protected void channelRead0(ChannelHandlerContext ctx, ChatMessage msg) throws Exception {
-        if ("PING".equals(msg.command)) {
-            // TODO: [실습3-1] PING 명령어에 대한 응답을 내보냅니다
-
-        } else if ("QUIT".equals(msg.command)) {
-            // TODO: [실습3-2] QUIT 명령어를 처리하고 BYE를 응답합니다. 연결도 끊습니다.
-
-        } else if ("SEND".equals(msg.command)) {
-            // TODO: [실습3-3] 클라이언트로부터 대화 텍스트가 왔습니다. 모든 채널에 FROM 메시지를 방송합니다.
-
-        } else if ("NICK".equals(msg.command)) {
-            changeNickname(ctx, msg);
-        } else {
-            ctx.write(M("ERR", null, "unknown command -> " + msg.command));
         }
     }
 
@@ -104,9 +106,7 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<ChatMessage>{
             case 2:
                 return new ChatMessage(args[0], args[1]);
             case 3:
-                ChatMessage m = new ChatMessage(args[0], args[1]);
-                m.text = args[2];
-                return m;
+                return new ChatMessage(args[0], args[1], args[2]);
             default:
                 throw new IllegalArgumentException();
         }
