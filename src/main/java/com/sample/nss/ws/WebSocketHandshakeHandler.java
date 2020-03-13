@@ -43,7 +43,6 @@ public class WebSocketHandshakeHandler extends SimpleChannelInboundHandler<FullH
 					// 웹소켓 핸드쉐이킹 처리 되면 웹소켓 핸들러로 변경
 					ChannelPipeline p = f.channel().pipeline();
 					p.replace(WebSocketHandshakeHandler.class, "wsHandler", wsHandler);
-					p.addLast(new LoggingHandler(LogLevel.INFO));
 					p.fireChannelActive();
 				});
 			}

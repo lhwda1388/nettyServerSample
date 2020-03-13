@@ -121,7 +121,7 @@
        	  console.log(event.data)
           var line = event.data
           line = $scope.bufToStr(line)
-          console.log(line)
+          console.log('line ; ' + line)
           var m1 = line.split(" ")
           var m2 = m1.shift().split(":", 2)
           var command = m2[0]
@@ -170,7 +170,6 @@
     	bufToStr: function (buf) {
     		const decoder = new TextDecoder('utf-8')
     		const str = decoder.decode(buf).toString()
-    		console.log(`str : ${str}`)
     		return str
     	},
         send: function() {

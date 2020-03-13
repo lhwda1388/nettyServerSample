@@ -1,17 +1,15 @@
 package com.sample.nss.ws;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-import com.sample.nss.StartUpUtil;
 import com.sample.nss.chat.ChatMessageCodec;
 import com.sample.nss.chat.ChatServerHandler;
+import com.sample.nss.chat.ChatServerHandler2;
 import com.sample.nss.http.HttpNotFoundHandler;
 import com.sample.nss.http.HttpStaticFileHandler;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -41,11 +39,11 @@ public class ProxyWebChatServer {
             	@Override
             	protected void initChannel(Channel ch) throws Exception {
             		ChannelPipeline p = ch.pipeline();
-            		p.addLast(new LineBasedFrameDecoder(1024, true, true))
+            		p.addLast(new LineBasedFrameDecoder(1024, true, true), new LoggingHandler(LogLevel.DEBUG))
         			.addLast(new StringDecoder(CharsetUtil.UTF_8), new StringEncoder(CharsetUtil.UTF_8))
-        			.addLast(new ChatMessageCodec(), new LoggingHandler(LogLevel.INFO))
-        			.addLast(new ChatServerHandler(), new LoggingHandler(LogLevel.INFO));
-            		
+        			.addLast(new ChatMessageCodec(), new LoggingHandler(LogLevel.DEBUG))
+        			.addLast(new ChatServerHandler(), new LoggingHandler(LogLevel.DEBUG));
+        			// .addLast(new ChatServerHandler2(), new LoggingHandler(LogLevel.DEBUG));
             	}
 			});
             
@@ -69,6 +67,7 @@ public class ProxyWebChatServer {
             		
             	}
 			});
+            // .childOption(ChannelOption.AUTO_READ, true);
             Channel ch = b.bind(8040).sync().channel();
             Channel ch2 = b2.bind(8050).sync().channel();
             
@@ -76,6 +75,8 @@ public class ProxyWebChatServer {
             ch2.closeFuture().sync();
         } finally {
             bossGroup.shutdownGracefully();
+            workerGroup.shutdownGracefully();
+            bossGroup2.shutdownGracefully();
             workerGroup.shutdownGracefully();
         }
 	}

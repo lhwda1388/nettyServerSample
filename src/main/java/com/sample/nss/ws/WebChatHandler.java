@@ -1,8 +1,5 @@
 package com.sample.nss.ws;
 
-import com.sample.nss.chat.ChatServerHandler;
-
-import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
@@ -13,17 +10,19 @@ import io.netty.handler.codec.http.websocketx.PingWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.PongWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class WebChatHandler extends SimpleChannelInboundHandler<WebSocketFrame>{
 
 	@Override
 	public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
 		// super.handlerAdded(ctx);
-		System.out.println("WebChatHandler handlerAdded");
+		log.debug("WebChatHandler handlerAdded");
 		String handlerName = handlerName(ctx);
 		// System.out.println("handlerName : " + handlerName);
 		ChannelPipeline p = ctx.pipeline();
-		// p.addAfter(handlerName, "chatServer", new ChatServerHandler());
+		//p.addAfter(handlerName, "chatServer", new ChatServerHandler());
 		p.addAfter(handlerName, "proxyServer", new ChatProxyHandler(ctx.channel()));
 		p.addAfter(handlerName, "wsEncoder", new WebSocketChatCodec());
 		
@@ -45,14 +44,14 @@ public class WebChatHandler extends SimpleChannelInboundHandler<WebSocketFrame>{
     
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-    	System.out.println("WebChatHandler channelActive");
+    	log.debug("WebChatHandler channelActive");
     	ctx.fireChannelActive();
     }
     
 	
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, WebSocketFrame wsFrame) throws Exception {
-		System.out.println("WebChatHandler channelRead0");
+		log.debug("WebChatHandler channelRead0");
 		
 		// close 인경우
 		if (wsFrame instanceof CloseWebSocketFrame) {

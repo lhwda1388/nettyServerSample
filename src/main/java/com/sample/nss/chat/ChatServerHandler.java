@@ -8,7 +8,9 @@ import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.util.AttributeKey;
 import io.netty.util.concurrent.GlobalEventExecutor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class ChatServerHandler extends SimpleChannelInboundHandler<ChatMessage>{
 	private static final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
     static final AttributeKey<String> nickAttr = AttributeKey.newInstance("nickname");
@@ -18,7 +20,8 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<ChatMessage>{
         // Tricky: 이미 channel이 active인 상황에서
         // 동적으로 이 핸들러가 등록될 때에는 channelActive가 불리지않습니다.
         // [실습4-2]를 위해서 여기서도 helo를 부릅니다.
-
+    	log.debug("ChatServerHandler handlerAdded");
+    	log.debug("channel : {}", ctx.channel());
         if (ctx.channel().isActive()) {
             helo(ctx.channel());
         }
@@ -27,6 +30,8 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<ChatMessage>{
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         // 클라이언트가 연결되면 수행
+    	log.debug("ChatServerHandler channelActive");
+    	log.debug("channel : {}", ctx.channel());
         helo(ctx.channel());
     }
 
@@ -45,7 +50,7 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<ChatMessage>{
                     .addListener(ChannelFutureListener.CLOSE);
         } else {
             bindNickname(ch, nick);
-            channels.forEach(c -> ch.write(M("HAVE", nickname(c))));
+            channels.forEach(c -> ch.writeAndFlush(M("HAVE", nickname(c))));
             channels.writeAndFlush(M("JOIN", nick));
             channels.add(ch);
             ch.writeAndFlush(M("HELO", nick));
@@ -54,7 +59,7 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<ChatMessage>{
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, ChatMessage msg) throws Exception {
-    	System.out.println("ChatServerHandler channelRead0 =====================================");
+    	log.debug("ChatServerHandler channelRead0 =====================================");
     	String command = msg.command.toUpperCase();
         if ("PING".equals(command)) {
             // TODO: [실습3-1] PING 명령어에 대한 응답을 내보냅니다

@@ -34,7 +34,6 @@ public class ChatMessage {
 	}
 	
 	public static ChatMessage parse(String line) {
-		System.out.println("line.contains(\"\\n\") " + line.contains("\n"));
 		if (line.contains("\n")) throw new IllegalArgumentException();
 		String[] tokens = line.split("\\s", 2);
 		String command = tokens[0];
