@@ -44,6 +44,7 @@ public class WebSocketHandshakeHandler extends SimpleChannelInboundHandler<FullH
 					ChannelPipeline p = f.channel().pipeline();
 					p.replace(WebSocketHandshakeHandler.class, "wsHandler", wsHandler);
 					p.addLast(new LoggingHandler(LogLevel.INFO));
+					p.fireChannelActive();
 				});
 			}
 			

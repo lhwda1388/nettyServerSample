@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import com.sample.nss.chat.ChatServer;
 import com.sample.nss.echo.EchoServer;
 import com.sample.nss.http.HttpStaticServer;
+import com.sample.nss.ws.ProxyWebChatServer;
 import com.sample.nss.ws.WebChatServer;
 
 import io.netty.buffer.ByteBuf;
@@ -31,10 +32,12 @@ public class NettyServerSampleApplication {
 		// 04: chat server
 		// ChatServer cs = new ChatServer(8040);
 		// cs.run();
-		
 		// 05: ws chat server
-		WebChatServer wcs = new WebChatServer(8050);
-		wcs.run();
+		// WebChatServer wcs = new WebChatServer(8050);
+		// wcs.run();
+		
+		ProxyWebChatServer ps = new ProxyWebChatServer();
+		ps.run();
 	}
 
 }
