@@ -108,6 +108,7 @@
       },
       mounted: function() {
         this.ws = window.ws = new WebSocket("ws://" + window.location.host + "/chat")
+        this.ws.binaryType = 'arraybuffer'
         var $scope = this
         var message = function(m) {
           $scope.messages.push(m)
@@ -116,7 +117,11 @@
         };
 
         this.ws.onmessage = function(event) {
+       	  console.log("ws onmessage");
+       	  console.log(event.data)
           var line = event.data
+          line = $scope.bufToStr(line)
+          console.log(line)
           var m1 = line.split(" ")
           var m2 = m1.shift().split(":", 2)
           var command = m2[0]
@@ -157,9 +162,21 @@
         }
       },
       methods: {
+    	strToBuf: function(str) {
+    		const encoder = new TextEncoder('utf-8')
+    		const uInt8 = encoder.encode(str)
+    		return uInt8.buffer
+    	},
+    	bufToStr: function (buf) {
+    		const decoder = new TextDecoder('utf-8')
+    		const str = decoder.decode(buf).toString()
+    		console.log(`str : ${str}`)
+    		return str
+    	},
         send: function() {
           if (this.text && this.text.length > 0) {
-            this.ws.send("SEND " + this.text)
+        	const msg = "SEND " + this.text
+            this.ws.send(this.strToBuf(msg))
             this.history.push(this.text)
             this.text = ""
           }
@@ -174,7 +191,8 @@
         change_nick: function() {
           if (this.nickname == "") this.nickname = this.prevnick
           if (this.prevnick != this.nickname) {
-            ws.send("NICK " + this.nickname)
+        	const msg = "NICK " + this.nickname
+            ws.send(this.strToBuf(msg))
           }
         }
       }

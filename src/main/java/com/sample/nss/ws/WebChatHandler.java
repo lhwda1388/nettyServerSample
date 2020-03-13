@@ -19,7 +19,7 @@ public class WebChatHandler extends SimpleChannelInboundHandler<WebSocketFrame>{
 	@Override
 	public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
 		// super.handlerAdded(ctx);
-		// System.out.println("handlerAdded");
+		System.out.println("handlerAdded");
 		String handlerName = handlerName(ctx);
 		// System.out.println("handlerName : " + handlerName);
 		ChannelPipeline p = ctx.pipeline();
@@ -58,7 +58,7 @@ public class WebChatHandler extends SimpleChannelInboundHandler<WebSocketFrame>{
 			return;
 		}
 		
-		if (!(wsFrame instanceof TextWebSocketFrame)) {
+		if (!(wsFrame instanceof TextWebSocketFrame || wsFrame instanceof BinaryWebSocketFrame)) {
 			throw new UnsupportedOperationException(String.format("%s frame types not supported", wsFrame.getClass()));
 		}
 		

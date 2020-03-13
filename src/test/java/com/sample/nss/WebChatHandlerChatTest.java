@@ -22,7 +22,7 @@ class WebChatHandlerChatTest {
         ChannelPipeline p = ch.pipeline();
         System.out.println(p.first().getClass());
         assertEquals(p.first().getClass(), WebChatHandler.class); // WEbChatHandler check
-        assertNotEquals(p.get(WebSocketChatCodec.class), null); //  WebSocketChat Codec check
+        // assertNotEquals(p.get(WebSocketChatCodec.class), null); //  WebSocketChat Codec check
         assertNotEquals(p.get(ChatServerHandler.class), null); // ChatServerHandler check
 	}
 
