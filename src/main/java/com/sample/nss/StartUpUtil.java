@@ -23,7 +23,7 @@ public class StartUpUtil {
             b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class);
             b.handler(new LoggingHandler(LogLevel.INFO));
             b.childHandler(childHandler);
-            b.childOption(ChannelOption.SO_KEEPALIVE, true);
+            // b.childOption(ChannelOption.SO_KEEPALIVE, true);
             block.accept(b);
             Channel ch = b.bind(port).sync().channel();
             System.err.println("Ready for 0.0.0.0:" + port);

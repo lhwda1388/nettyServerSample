@@ -54,7 +54,7 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<ChatMessage>{
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, ChatMessage msg) throws Exception {
-    	System.out.println("channelRead0 =====================================");
+    	System.out.println("ChatServerHandler channelRead0 =====================================");
     	String command = msg.command.toUpperCase();
         if ("PING".equals(command)) {
             // TODO: [실습3-1] PING 명령어에 대한 응답을 내보냅니다

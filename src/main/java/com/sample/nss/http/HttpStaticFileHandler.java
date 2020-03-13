@@ -18,9 +18,10 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.LastHttpContent;
+import io.netty.util.ReferenceCountUtil;
 import lombok.AllArgsConstructor;
 
-public class HttpStaticFileHandler extends SimpleChannelInboundHandler<HttpRequest>{
+public class HttpStaticFileHandler extends SimpleChannelInboundHandler<FullHttpRequest>{
 	private String path;
 	private String filename;
 	
@@ -31,11 +32,13 @@ public class HttpStaticFileHandler extends SimpleChannelInboundHandler<HttpReque
     }
 	
 	@Override
-	protected void channelRead0(ChannelHandlerContext ctx, HttpRequest req) throws Exception {
+	protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest req) throws Exception {
 		if (!this.path.equals(req.getUri())) {
+			// req.retain();
+			System.out.println("HttpStaticFileHandler refCnt : " + ReferenceCountUtil.refCnt(req));
 			ctx.fireChannelRead(req);
 		} else {
-			sendStaticFile(ctx, (FullHttpRequest)req);
+			sendStaticFile(ctx,req);
 		}
 		
 	}

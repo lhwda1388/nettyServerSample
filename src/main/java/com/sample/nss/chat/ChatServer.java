@@ -22,7 +22,7 @@ public class ChatServer {
 			p.addLast(new LineBasedFrameDecoder(1024, true, true))
 			.addLast(new StringDecoder(CharsetUtil.UTF_8), new StringEncoder(CharsetUtil.UTF_8))
 			.addLast(new ChatMessageCodec(), new LoggingHandler(LogLevel.INFO))
-			.addLast(new ChatServerHandler());
+			.addLast(new ChatServerHandler(), new LoggingHandler(LogLevel.INFO));
 			
 		});
 	}
