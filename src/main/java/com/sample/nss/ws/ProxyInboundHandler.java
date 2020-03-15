@@ -1,7 +1,5 @@
 package com.sample.nss.ws;
 
-import com.sample.nss.chat.ChatMessage;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
@@ -15,26 +13,19 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@AllArgsConstructor
 public class ProxyInboundHandler extends SimpleChannelInboundHandler<String>{
 	private Channel wsChannel;
-	private ChannelHandlerContext ctx;
-	
-	public ProxyInboundHandler(Channel wsChannel) {
-		this.wsChannel = wsChannel;
-	}
-	
 	
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
-		this.ctx = ctx;
+		log.debug("ProxyInboundHandler active channel : {}", ctx.channel());
 		ctx.read();
-		log.debug("ProxyInboundHandler active");
-		ctx.writeAndFlush("SEND TEST");
 	}
 	
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {
-		log.debug("ProxyInboundHandler channelRead0 : "+ msg);
+		log.debug("ProxyInboundHandler channelRead0 msg : {}, channel:  {}", msg, ctx.channel());
 		ByteBuf buf = Unpooled.wrappedBuffer(msg.getBytes(CharsetUtil.UTF_8));
 		BinaryWebSocketFrame frame = new BinaryWebSocketFrame(buf);
 		// System.out.println("start : " +  buf.toString(CharsetUtil.UTF_8) + " : end");
@@ -47,18 +38,6 @@ public class ProxyInboundHandler extends SimpleChannelInboundHandler<String>{
 				} else {
 					future.channel().close();
 				}
-			}
-		});
-	}
-	
-	public void sendMsg(ChatMessage msg) {
-		byte[] str = msg.toString().getBytes(CharsetUtil.UTF_8);
-        ByteBuf byteBuf = Unpooled.copiedBuffer(str);
-		ctx.writeAndFlush(byteBuf).addListener(new ChannelFutureListener() {
-			
-			@Override
-			public void operationComplete(ChannelFuture future) throws Exception {
-				log.debug("sendMsg result : {}", future.isSuccess());
 			}
 		});
 	}

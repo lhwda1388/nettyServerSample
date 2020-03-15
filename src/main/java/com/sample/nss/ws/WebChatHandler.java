@@ -23,7 +23,7 @@ public class WebChatHandler extends SimpleChannelInboundHandler<WebSocketFrame>{
 		// System.out.println("handlerName : " + handlerName);
 		ChannelPipeline p = ctx.pipeline();
 		//p.addAfter(handlerName, "chatServer", new ChatServerHandler());
-		p.addAfter(handlerName, "proxyServer", new ChatProxyHandler(ctx.channel()));
+		p.addAfter(handlerName, "proxyServer", new ChatProxyHandler());
 		p.addAfter(handlerName, "wsEncoder", new WebSocketChatCodec());
 		
 		handlerName(ctx);
@@ -42,13 +42,6 @@ public class WebChatHandler extends SimpleChannelInboundHandler<WebSocketFrame>{
         return result[0];
     }
     
-    @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
-    	log.debug("WebChatHandler channelActive");
-    	ctx.fireChannelActive();
-    }
-    
-	
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, WebSocketFrame wsFrame) throws Exception {
 		log.debug("WebChatHandler channelRead0");

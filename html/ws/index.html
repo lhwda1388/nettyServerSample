@@ -69,6 +69,9 @@
             <button class="btn btn-primary" style="height: 36px;" @click="send">
               <i class="fa fa-comment"> 보내기</i>
             </button>
+            <button class="btn btn-primary" style="height: 36px;" @click="ping">
+              <i class="fa fa-comment"> PING</i>
+            </button>
           </div>
         </form>
       </section>
@@ -151,6 +154,8 @@
             }
             a.splice(a.indexOf(nickname), 1)
             a.push(text)
+          } else if (command == "PONG") {
+        	message({type: "info", text: "PONG"})	  
           }
         }
         this.ws.onopen = function() {
@@ -179,6 +184,10 @@
             this.history.push(this.text)
             this.text = ""
           }
+        },
+        ping: function() {
+          	const msg = "PING"
+        	this.ws.send(this.strToBuf(msg))
         },
         keydown: function($event) {
           if ($event.keyCode == 38) { // 커서 위방향

@@ -27,9 +27,9 @@ public class ProxyWebChatServer {
 	
 	public void run() throws Exception {
 		EventLoopGroup bossGroup = new NioEventLoopGroup(1);
-        EventLoopGroup workerGroup = new NioEventLoopGroup(2);
+        EventLoopGroup workerGroup = new NioEventLoopGroup();
         EventLoopGroup bossGroup2 = new NioEventLoopGroup(1);
-        EventLoopGroup workerGroup2 = new NioEventLoopGroup(2);
+        EventLoopGroup workerGroup2 = new NioEventLoopGroup();
         try {
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup)
@@ -39,13 +39,14 @@ public class ProxyWebChatServer {
             	@Override
             	protected void initChannel(Channel ch) throws Exception {
             		ChannelPipeline p = ch.pipeline();
-            		p.addLast(new LineBasedFrameDecoder(1024, true, true), new LoggingHandler(LogLevel.DEBUG))
-        			.addLast(new StringDecoder(CharsetUtil.UTF_8), new StringEncoder(CharsetUtil.UTF_8))
-        			.addLast(new ChatMessageCodec(), new LoggingHandler(LogLevel.DEBUG))
-        			.addLast(new ChatServerHandler(), new LoggingHandler(LogLevel.DEBUG));
+            		// p.addLast(new LineBasedFrameDecoder(1024, true, true));
+        			p.addLast(new StringDecoder(CharsetUtil.UTF_8), new StringEncoder(CharsetUtil.UTF_8));
+        			p.addLast(new ChatMessageCodec(), new LoggingHandler(LogLevel.INFO));
+        			p.addLast(new ChatServerHandler(), new LoggingHandler(LogLevel.INFO));
         			// .addLast(new ChatServerHandler2(), new LoggingHandler(LogLevel.DEBUG));
             	}
 			});
+            // b.childOption(ChannelOption.AUTO_READ, false);
             
             final String index = System.getProperty("user.dir") + "/html/ws/index.html";
             ServerBootstrap b2 = new ServerBootstrap();
@@ -67,7 +68,7 @@ public class ProxyWebChatServer {
             		
             	}
 			});
-            // .childOption(ChannelOption.AUTO_READ, true);
+            // b2.childOption(ChannelOption.AUTO_READ, false);
             Channel ch = b.bind(8040).sync().channel();
             Channel ch2 = b2.bind(8050).sync().channel();
             

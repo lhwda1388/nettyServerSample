@@ -3,14 +3,7 @@ package com.sample.nss;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import com.sample.nss.chat.ChatServer;
-import com.sample.nss.echo.EchoServer;
-import com.sample.nss.http.HttpStaticServer;
 import com.sample.nss.ws.ProxyWebChatServer;
-import com.sample.nss.ws.WebChatServer;
-
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 
 @SpringBootApplication
 public class NettyServerSampleApplication {

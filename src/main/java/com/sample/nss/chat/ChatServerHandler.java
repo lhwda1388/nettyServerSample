@@ -15,9 +15,10 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<ChatMessage>{
 	private static final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
     static final AttributeKey<String> nickAttr = AttributeKey.newInstance("nickname");
     private static final NicknameProvider nicknameProvider = new NicknameProvider();
-
+    
+    @Override
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
-        // Tricky: 이미 channel이 active인 상황에서
+    	// Tricky: 이미 channel이 active인 상황에서
         // 동적으로 이 핸들러가 등록될 때에는 channelActive가 불리지않습니다.
         // [실습4-2]를 위해서 여기서도 helo를 부릅니다.
     	log.debug("ChatServerHandler handlerAdded");
@@ -80,6 +81,7 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<ChatMessage>{
     
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
+    	log.debug("ChatServerHandler channelReadComplete");
         ctx.flush();
     }
 
