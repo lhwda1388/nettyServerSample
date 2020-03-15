@@ -13,6 +13,7 @@ public class ChatMessageCodec extends MessageToMessageCodec<String, ChatMessage>
 	protected void encode(ChannelHandlerContext ctx, ChatMessage msg, List<Object> out) throws Exception {
 		log.debug("ChatMessageCodec encode =============================== {}", msg.command);
 		String tempMsg = msg.toString() + "\r\n";
+		// String tempMsg = msg.toString();
 		log.debug("| {} |", tempMsg);
 		out.add(tempMsg);
 	}
@@ -20,6 +21,7 @@ public class ChatMessageCodec extends MessageToMessageCodec<String, ChatMessage>
 	@Override
 	protected void decode(ChannelHandlerContext ctx, String msg, List<Object> out) throws Exception {
 		log.debug("ChatMessageCodec decode =============================== , {}", msg);
+		log.debug("| {} |", msg);
 		out.add(ChatMessage.parse(msg));
 	}
 }

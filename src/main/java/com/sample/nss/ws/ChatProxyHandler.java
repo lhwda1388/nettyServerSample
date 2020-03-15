@@ -56,11 +56,8 @@ public class ChatProxyHandler extends SimpleChannelInboundHandler<ChatMessage>{
     protected void channelRead0(ChannelHandlerContext ctx, ChatMessage msg) throws Exception {
     	// TODO Auto-generated method stub
     	log.debug("ChatProxyHandler channelRead0 msg: {}, outChannel : {}", msg, outChannel);
-    	byte[] str = msg.toString().getBytes(CharsetUtil.UTF_8);
-		// final ByteBuf byteBuf = Unpooled.wrappedBuffer(str);
-		ByteBuf byteBuf = outChannel.alloc().buffer();
-		byteBuf.writeBytes(str);
-		outChannel.writeAndFlush(msg.toString()).addListener(new ChannelFutureListener() {
+    	String tempMsg = msg.toString() + "\r\n";
+		outChannel.writeAndFlush(tempMsg).addListener(new ChannelFutureListener() {
 			
 			@Override
 			public void operationComplete(ChannelFuture future) throws Exception {

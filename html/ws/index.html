@@ -127,7 +127,7 @@
           console.log('line ; ' + line)
           var m1 = line.split(" ")
           var m2 = m1.shift().split(":", 2)
-          var command = m2[0]
+          var command = m2[0].replace(/\r\n$/,'')
           var nickname = m2[1]
           var text = m1.join(" ")
           console.log([line, command, nickname, text])
