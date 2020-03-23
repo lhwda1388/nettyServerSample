@@ -2,6 +2,8 @@ package com.sample.nss.ws;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
+
 import com.sample.nss.chat.ChatMessage;
 
 import io.netty.buffer.ByteBuf;
@@ -13,7 +15,8 @@ import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class WebSocketChatCodec extends MessageToMessageCodec<BinaryWebSocketFrame, ChatMessage>{
+public class WebSocketChatBinCodec extends MessageToMessageCodec<BinaryWebSocketFrame, ChatMessage>{
+	
 	@Override
 	protected void encode(ChannelHandlerContext ctx, ChatMessage msg, List<Object> out) throws Exception {
 		log.debug("WebSocketChatCodec encode : " , msg.toString());

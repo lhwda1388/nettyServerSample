@@ -1,5 +1,7 @@
 package com.sample.nss.ws;
 
+import org.springframework.beans.factory.annotation.Value;
+
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
@@ -14,7 +16,9 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class WebChatHandler extends SimpleChannelInboundHandler<WebSocketFrame>{
-
+	@Value("${ws.bin-mode}")
+	private boolean wsBinMode;
+	
 	@Override
 	public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
 		// super.handlerAdded(ctx);
@@ -24,7 +28,12 @@ public class WebChatHandler extends SimpleChannelInboundHandler<WebSocketFrame>{
 		ChannelPipeline p = ctx.pipeline();
 		//p.addAfter(handlerName, "chatServer", new ChatServerHandler());
 		p.addAfter(handlerName, "proxyServer", new ChatProxyHandler());
-		p.addAfter(handlerName, "wsEncoder", new WebSocketChatCodec());
+		if (wsBinMode) {
+			p.addAfter(handlerName, "wsEncoder", new WebSocketChatBinCodec());
+		} else {
+			p.addAfter(handlerName, "wsEncoder", new WebSocketChatTextCodec());
+		}
+		
 		
 		handlerName(ctx);
 	}
