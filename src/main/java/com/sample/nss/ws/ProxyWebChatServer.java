@@ -2,14 +2,12 @@ package com.sample.nss.ws;
 
 import com.sample.nss.chat.ChatMessageCodec;
 import com.sample.nss.chat.ChatServerHandler;
-import com.sample.nss.chat.ChatServerHandler2;
 import com.sample.nss.http.HttpNotFoundHandler;
 import com.sample.nss.http.HttpStaticFileHandler;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -22,14 +20,17 @@ import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.util.CharsetUtil;
+import io.netty.util.internal.SystemPropertyUtil;
 
 public class ProxyWebChatServer {
-	
+	private final static int BOSS_THREADS = 1;
+	private final static int MAX_WORKER_THREADS = 12;
+
 	public void run() throws Exception {
 		EventLoopGroup bossGroup = new NioEventLoopGroup(1);
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
+        EventLoopGroup workerGroup = new NioEventLoopGroup(calculateThreadCount());
         EventLoopGroup bossGroup2 = new NioEventLoopGroup(1);
-        EventLoopGroup workerGroup2 = new NioEventLoopGroup();
+        EventLoopGroup workerGroup2 = new NioEventLoopGroup(calculateThreadCount());
         try {
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup)
@@ -80,5 +81,19 @@ public class ProxyWebChatServer {
             bossGroup2.shutdownGracefully();
             workerGroup.shutdownGracefully();
         }
+	}
+	
+	private int calculateThreadCount() {
+	    int threadCount;
+	    System.out.println("??? : " + SystemPropertyUtil.getInt("io.netty.eventLoopThreads", 0));
+	    if ((threadCount = SystemPropertyUtil.getInt("io.netty.eventLoopThreads", 0)) > 0) {
+	    	System.out.println("calculateThreadCount1: " + threadCount);
+	        return threadCount;
+	    } else {
+	        threadCount = Runtime.getRuntime().availableProcessors() * 2;
+	        System.out.println("Runtime : " + threadCount);
+	        System.out.println("calculateThreadCount2: " + (threadCount > MAX_WORKER_THREADS ? MAX_WORKER_THREADS : threadCount));
+	        return threadCount > MAX_WORKER_THREADS ? MAX_WORKER_THREADS : threadCount;
+	    }
 	}
 }
