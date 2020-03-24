@@ -21,7 +21,7 @@ public class StartUpUtil {
         try {
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class);
-            b.handler(new LoggingHandler(LogLevel.INFO));
+            b.handler(new LoggingHandler(LogLevel.DEBUG));
             b.childHandler(childHandler);
             // b.childOption(ChannelOption.SO_KEEPALIVE, true);
             block.accept(b);

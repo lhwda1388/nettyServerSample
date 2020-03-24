@@ -1,5 +1,6 @@
 package com.sample.nss.chat;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -14,6 +15,7 @@ public class NicknameProvider {
     private final Set<String> occupied = new HashSet<>();
 
     public NicknameProvider() {
+    	/*
         List<String> names = Arrays.asList(
                 "Mark", "Tim", "Evan", "Bill", "Larry",
                 "Paul", "Eric", "David", "Martin", "Matz",
@@ -23,6 +25,12 @@ public class NicknameProvider {
                 "Kevin", "Russel", "LeBron", "Kobe", "Chris",
                 "Tony", "Blake", "Dwayne", "Carmelo"
         );
+        */
+        ArrayList<String> names = new ArrayList<String>();
+        for (int i = 0; i < 10000; i++) {
+        	names.add("name" + i);
+        }
+        
         preset = new HashSet<>(names);
         Collections.shuffle(names);
         pool = new LinkedList<>(names);

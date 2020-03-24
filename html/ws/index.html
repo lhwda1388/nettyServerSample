@@ -123,7 +123,7 @@
        	  console.log("ws onmessage");
        	  console.log(event.data)
           var line = event.data
-          line = $scope.bufToStr(line)
+          // line = $scope.bufToStr(line)
           console.log('line ; ' + line)
           var m1 = line.split(" ")
           var m2 = m1.shift().split(":", 2)
@@ -180,14 +180,16 @@
         send: function() {
           if (this.text && this.text.length > 0) {
         	const msg = "SEND " + this.text
-            this.ws.send(this.strToBuf(msg))
+            //this.ws.send(this.strToBuf(msg))
+            this.ws.send(msg)
             this.history.push(this.text)
             this.text = ""
           }
         },
         ping: function() {
           	const msg = "PING"
-        	this.ws.send(this.strToBuf(msg))
+        	// this.ws.send(this.strToBuf(msg))
+        	this.ws.send(msg)
         },
         keydown: function($event) {
           if ($event.keyCode == 38) { // 커서 위방향
@@ -200,7 +202,8 @@
           if (this.nickname == "") this.nickname = this.prevnick
           if (this.prevnick != this.nickname) {
         	const msg = "NICK " + this.nickname
-            ws.send(this.strToBuf(msg))
+            // ws.send(this.strToBuf(msg))
+            ws.send(msg)
           }
         }
       }

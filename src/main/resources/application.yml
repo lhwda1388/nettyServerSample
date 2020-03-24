@@ -5,8 +5,8 @@ spring:
       
 logging:
   level:
-    com.sample.nss: debug
-    io.netty: debug
+    com.sample.nss: error
+    io.netty: error
     
     
     

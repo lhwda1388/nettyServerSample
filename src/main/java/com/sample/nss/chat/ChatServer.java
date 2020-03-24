@@ -21,8 +21,8 @@ public class ChatServer {
 		StartUpUtil.runServer(this.port, p -> {
 			// p.addLast(new LineBasedFrameDecoder(1024, true, true));
 			p.addLast(new StringDecoder(CharsetUtil.UTF_8), new StringEncoder(CharsetUtil.UTF_8));
-			p.addLast(new ChatMessageCodec(), new LoggingHandler(LogLevel.INFO));
-			p.addLast(new ChatServerHandler(), new LoggingHandler(LogLevel.INFO));
+			p.addLast(new ChatMessageCodec(), new LoggingHandler(LogLevel.DEBUG));
+			p.addLast(new ChatServerHandler(), new LoggingHandler(LogLevel.DEBUG));
 			
 		});
 	}
